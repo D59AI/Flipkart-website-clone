@@ -104,15 +104,21 @@
 
 
 
+            
             <div class="geolocation-button" id="geolocation-button">
                 <span>
                     <img src="geolocation.png" width="80" height="45" >
                 </span>
+                <button onclick="geolocation()" width="100" height="40">Get Weather</button>
+                <p id="out"></p>
+                <p id="weather"></p>
+            
             </div>
             <style>
                 #geolocation-button{
                     align-items: center;
-                    padding-top: 4px;
+                    padding-top: 21px;
+                    padding-bottom: 19px;
                     cursor: pointer;
                 }
             </style>
@@ -134,6 +140,8 @@
                     alert(`Error: ${error.message}`);
                 }
 
+      
+
                 function getLocation() {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(showPosition);
@@ -151,12 +159,41 @@
                 function clearGeolocationTimer() {
                     clearTimeout(locationTimer);
                 }
-        
-                setGeolocationTimer();
-                geolocationButton.addEventListener('click', clearGeolocationTimer);
-            </script>
-        
+
                 
+                
+                    let x = document.getElementById('out');
+                    let y = document.getElementById('weather');
+        
+                    function geolocation(){
+                        if(navigator.geolocation){
+                            navigator.geolocation.getCurrentPosition(showPosition)
+                        }else{
+                            x.innerText = "Geo Not Supported"
+                        }
+                    }
+        
+                    function showPosition(data){
+                        console.log(data)
+                        let lat = data.coords.latitude;
+                        let lon = data.coords.longitude;
+                        x.innerText = `Latitude is ${lat} and longitude is ${lon}`
+                        const url = `https://api.openweathermap.org/data/2.5/forecast/daily?lat=${lat}&lon=${lon}&mode=json&units=metric&cnt=5&appid=fbf712a5a83d7305c3cda4ca8fe7ef29`;
+                        //api calling
+                        fetch(url,{method:'GET'})
+                        //return promise
+                        .then((res) =>  res.json())
+                        //resolve the promise
+                        .then((data) => {
+                            console.log(data)
+                            let cityName = data.city.name;
+                            let temp = data.list[0].temp.day+" °C"
+                            y.innerText=`Weather of ${cityName} is ${temp}`
+                        })
+                    }
+                </script>
+     
+                               
 
 
             <div class="navtab" id="mode">
